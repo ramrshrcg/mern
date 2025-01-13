@@ -1,13 +1,23 @@
 require("dotenv").config();
+
+
 const expresss = require("express");
+const cors= require("cors");
+
+
+
+
 const connectToDatabase = require("./data-base");
 const Blog = require("./models/blogModel");
 const { storage, multer } = require("./middleware/multerconfig");
 const app = expresss();
+
+
 app.use(expresss.json());
 const fs = require("fs");
 const { error } = require("console");
 app.use(expresss.static("./storage"));
+app.use(cors());
 
 const upload = multer({ storage: storage });
 
