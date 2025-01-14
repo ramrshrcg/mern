@@ -1,17 +1,12 @@
 require("dotenv").config();
 
-
 const expresss = require("express");
-const cors= require("cors");
-
-
-
+const cors = require("cors");
 
 const connectToDatabase = require("./data-base");
 const Blog = require("./models/blogModel");
 const { storage, multer } = require("./middleware/multerconfig");
 const app = expresss();
-
 
 app.use(expresss.json());
 const fs = require("fs");
@@ -97,13 +92,11 @@ app.delete("/blog/:id", async (req, res) => {
 
 app.patch("/blog/:id", upload.single("image"), async (req, res) => {
   const id = req.params.id;
-  const { updatedtitle, sub_title,description} = req.body;
+  const { updatedtitle, sub_title, description } = req.body;
   let updatedimageName;
-  const newimage= req.file.filename
-  
+  const newimage = req.file.filename;
+
   if (newimage) {
-    
-    
     const blog = await Blog.findById(id);
     const oldimageName = blog.image;
     fs.unlink(`storage/${oldimageName}`, (error) => {
@@ -113,18 +106,17 @@ app.patch("/blog/:id", upload.single("image"), async (req, res) => {
         console.log("old image removed ");
       }
     });
-    updatedimageName= newimage
+    updatedimageName = newimage;
   }
   //updatedimageName = req.file.filename;
-  
 
   await Blog.findByIdAndUpdate(id, {
-    title:updatedtitle,
+    title: updatedtitle,
     sub_title: sub_title,
     description: description,
     image: updatedimageName,
   });
-  console.log(updatedimageName)
+  console.log(updatedimageName);
 
   res.status(200).json({
     message: "Blog updated",
