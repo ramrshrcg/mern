@@ -16,6 +16,8 @@ app.use(cors());
 
 const upload = multer({ storage: storage });
 
+const port = process.env.PORT || 4000;
+
 connectToDatabase();
 
 app.get("/", (req, res) => {
@@ -26,7 +28,13 @@ app.get("/", (req, res) => {
 });
 app.post("/blog", upload.single("image"), async (req, res) => {
   const { title, sub_title, description } = req.body;
-  const image = req.file.filename;
+  console.log(req.body);
+
+  if (req.file) {
+    image = req.file.filename;
+  } else {
+    image = "";
+  }
 
   if (!title || !description || !sub_title) {
     return res.status(400).json({
@@ -90,12 +98,15 @@ app.delete("/blog/:id", async (req, res) => {
   });
 });
 
-app.patch("/blog/:id", upload.single("image"), async (req, res) => {
+app.patch("/eblog/:id", upload.single("image"), async (req, res) => {
   const id = req.params.id;
   const { updatedtitle, sub_title, description } = req.body;
-  let updatedimageName;
-  const newimage = req.file.filename;
 
+  let updatedimageName;
+  let newimage;
+  if (req.file) {
+    newimage = req.file.filename;
+  }
   if (newimage) {
     const blog = await Blog.findById(id);
     const oldimageName = blog.image;
@@ -116,13 +127,12 @@ app.patch("/blog/:id", upload.single("image"), async (req, res) => {
     description: description,
     image: updatedimageName,
   });
-  console.log(updatedimageName);
 
   res.status(200).json({
     message: "Blog updated",
   });
 });
 
-app.listen(process.env.PORT, () => {
+app.listen(port, () => {
   console.log("npm has started");
 });
